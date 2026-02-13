@@ -35,6 +35,15 @@
     *   支持 Java 调用 Python 脚本作为 "Skill"（技能），轻松扩展如 **浏览器自动化 (Browser Automation)**、**加密货币价格查询**、**邮件处理**、**系统状态监控** 等能力。
 *   **企业级架构**：基于 Spring Boot 3.3，集成 Redis 缓存，具备良好的扩展性和维护性。
 
+### 📸 运行截图 (Screenshots)
+
+以下展示了通过 Teammors 和 Telegram 客户端调用 Agent 技能的实际效果：
+
+<p align="center">
+  <img src="screenshot1.png" alt="Screenshot 1" width="45%">
+  <img src="screenshot2.png" alt="Screenshot 2" width="45%">
+</p>
+
 ### 🎯 项目目标 (Goals)
 
 参考 **OpenClaw** 的精神，本项目致力于：
@@ -112,6 +121,15 @@ It integrates advanced LLMs (like DeepSeek) and empowers agents with real-world 
     *   Innovatively combines the robustness of Java with the rich ecosystem of Python.
     *   Supports Java invoking Python scripts as "Skills", easily extending capabilities like **Browser Automation**, **Crypto Price Checking**, **Email Processing**, and **System Status Monitoring**.
 *   **Enterprise Architecture**: Built on Spring Boot 3.3 and Redis, ensuring scalability and maintainability.
+
+### 📸 Screenshots
+
+Demonstration of invoking Agent skills via Teammors and Telegram clients:
+
+<p align="center">
+  <img src="screenshot1.png" alt="Screenshot 1" width="45%">
+  <img src="screenshot2.png" alt="Screenshot 2" width="45%">
+</p>
 
 ### 🎯 Goals
 
