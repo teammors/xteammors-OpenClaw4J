@@ -21,7 +21,7 @@
 
 **OpenClaw4J** 是一个基于 Java 17 和 **Spring AI** 构建的现代智能 Agent 框架。受到 OpenClaw 项目（开源精神与经典重构）的启发，本项目的目标是为 Java 开发者提供一个灵活、可扩展且功能强大的 AI 机器人/Agent 开发底座。
 
-它不仅集成了先进的 LLM（如 DeepSeek），还通过 **RAG（检索增强生成）** 和 **混合技能系统（Java + Python）** 赋予了 Agent 真实的行动能力，支持多平台（Telegram、Teammors）接入。
+它不仅集成了先进的 LLM（如 DeepSeek），**还通过 **RAG（检索增强生成）**** 和 **混合技能系统（Java + Python）** 赋予了 Agent 真实的行动能力，支持多平台（Telegram、Teammors）接入。
 
 ### ✨ 主要特点 (Features)
 
@@ -30,6 +30,7 @@
 *   **RAG 知识库**：
     *   内置 `SimpleVectorStore`（基于文件的向量存储），无需复杂的向量数据库部署即可实现轻量级 RAG。
     *   支持本地知识检索，增强回答准确性。
+    *   **Token 优化**：引入 RAG 技术可极大地降低 Token 的使用数量，避免类似 OpenClaw 那样消耗大量的 Token。
 *   **混合技能系统 (Hybrid Skill System)**：
     *   创新性地结合 Java 的稳健性与 Python 的生态丰富性。
     *   支持 Java 调用 Python 脚本作为 "Skill"（技能），轻松扩展如 **浏览器自动化 (Browser Automation)**、**加密货币价格查询**、**邮件处理**、**系统状态监控** 等能力。
@@ -117,6 +118,7 @@ It integrates advanced LLMs (like DeepSeek) and empowers agents with real-world 
 *   **RAG (Retrieval-Augmented Generation)**:
     *   Includes `SimpleVectorStore` (file-based vector storage) for lightweight RAG without complex vector database deployment.
     *   Supports local knowledge retrieval to enhance answer accuracy.
+    *   **Token Optimization**: Introducing RAG significantly reduces Token usage, avoiding the high Token consumption issues often seen in similar projects like OpenClaw.
 *   **Hybrid Skill System**:
     *   Innovatively combines the robustness of Java with the rich ecosystem of Python.
     *   Supports Java invoking Python scripts as "Skills", easily extending capabilities like **Browser Automation**, **Crypto Price Checking**, **Email Processing**, and **System Status Monitoring**.
