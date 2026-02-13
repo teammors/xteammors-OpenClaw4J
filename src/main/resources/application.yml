@@ -1,0 +1,52 @@
+server:
+  port: 8900
+
+spring:
+  application:
+    name: openclaw4j-server
+  data:
+    redis:
+      host: ${redis.ip}
+      port: ${redis.port}
+      password: ${redis.password}
+      username: ${redis.user}
+      database: ${redis.db}
+      timeout: 5000ms
+      connect-timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1ms
+  ai:
+    openai:
+      api-key: your-ai-api-key<Deepseek is used as the large model in the example>
+      base-url: your-ai-api-url
+      embedding:
+        enabled: false
+      chat:
+        options:
+          model: deepseek-chat
+          temperature: 0.7
+          max-tokens: 2000
+    transformers:
+      embedding:
+        enabled: true
+        model: sentence-transformers/all-MiniLM-L6-v2
+
+
+teammors:
+  token: your-teammors-bot-token
+telegram:
+  id: your-telegram-bot-id
+  token: your-telegram-bot-token
+  name: your-bot-username
+
+redis:
+  ip: localhost
+  port: 6379
+  password: your-redis-password
+  user: default
+  db: 2
+  cluster: 0
