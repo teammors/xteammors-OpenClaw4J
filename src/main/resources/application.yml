@@ -50,3 +50,6 @@ redis:
   user: default
   db: 2
   cluster: 0
+
+skills:
+  dir: /Volumes/Data/XTeammors/ServerCodes/OpenClaw4J/skills
