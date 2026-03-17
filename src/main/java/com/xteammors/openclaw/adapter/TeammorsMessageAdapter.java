@@ -3,7 +3,7 @@ package com.xteammors.openclaw.adapter;
 import com.xteammors.openclaw.rag.service.RAGService;
 import com.xteammors.openclaw.skills.base.AgentSkill;
 import com.xteammors.openclaw.utils.PositiveIntegerValidator;
-import com.teammors.robot.ws.TRobotClient;
+import com.xteammors.openclaw.wssdk.XMessageClient;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -82,11 +82,13 @@ public class TeammorsMessageAdapter implements Runnable {
     }
 
     private boolean processResponse(String chatId, String requestId, String responseBody) {
-        if (PositiveIntegerValidator.isPositiveInteger(chatId)) {
-            String toUid = TRobotClient.instance().mId + "_" + chatId;
-            return TRobotClient.instance().sendSingleUserTxtMessage(responseBody, toUid, 1);
-        } else {
-            return TRobotClient.instance().sendToGroupTxtMessage(responseBody, chatId, 1);
+
+        if(PositiveIntegerValidator.isPositiveInteger(chatId)) {
+            String toUid = XMessageClient.instance().mId+"_"+chatId;
+            return XMessageClient.instance().sendSingleUserTxtMessage(responseBody,toUid,1);
+        }else {
+            return XMessageClient.instance().sendToGroupTxtMessage(responseBody,chatId,1);
         }
+
     }
 }

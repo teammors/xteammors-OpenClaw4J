@@ -1,6 +1,7 @@
 package com.xteammors.openclaw.skills;
 
 import com.alibaba.fastjson.JSONObject;
+import com.xteammors.openclaw.property.SkillsDirProperty;
 import com.xteammors.openclaw.skills.base.AgentSkill;
 import com.xteammors.openclaw.utils.ShellUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +21,11 @@ import java.util.regex.Pattern;
 @Service
 public class SendEmailSkill implements AgentSkill {
 
-    private static final String SKILL_CONFIG_PATH = "skills/send-email/SKILL.md";
-    private static final String PYTHON_SCRIPT_PATH = "skills/send-email/scripts/send_email.py";
+    private static final String SKILL_CONFIG_PATH = "/send-email/SKILL.md";
+    private static final String PYTHON_SCRIPT_PATH = "/send-email/scripts/send_email.py";
+
+    @Autowired
+    SkillsDirProperty skillsDirProperty;
 
     @Autowired
     private ChatClient chatClient;
@@ -83,7 +87,8 @@ public class SendEmailSkill implements AgentSkill {
             }
 
             // 3. Send the email using python script
-            File scriptFile = new File(PYTHON_SCRIPT_PATH);
+            String scPath = skillsDirProperty.getDir()+PYTHON_SCRIPT_PATH;
+            File scriptFile = new File(scPath);
             String scriptPath = scriptFile.getAbsolutePath();
             
             log.info("Executing python script: {}", scriptPath);
@@ -116,9 +121,12 @@ public class SendEmailSkill implements AgentSkill {
 
     private Map<String, Object> loadConfig() {
         try {
-            File file = new File(SKILL_CONFIG_PATH);
+
+            String mdPath = skillsDirProperty.getDir()+SKILL_CONFIG_PATH;
+            File file = new File(mdPath);
+
             if (!file.exists()) {
-                log.error("Skill config file not found: {}", SKILL_CONFIG_PATH);
+                log.error("Skill config file not found: {}", mdPath);
                 return null;
             }
 

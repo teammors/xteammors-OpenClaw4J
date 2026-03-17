@@ -1,7 +1,6 @@
 package com.xteammors.openclaw;
 
-import com.xteammors.openclaw.config.AgentConfigManager;
-import com.xteammors.openclaw.proxy.TeammorsMessageProxy;
+import com.xteammors.openclaw.manager.AgentManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -13,11 +12,10 @@ import org.springframework.context.event.ContextClosedEvent;
 public class OpenClaw4JApplication implements CommandLineRunner, ApplicationListener<ContextClosedEvent> {
 
 
-    @Autowired
-    TeammorsMessageProxy teammorsMessageProxy;
+
 
     @Autowired
-    AgentConfigManager agentConfigManager;
+    AgentManager agentManager;
 
 
 
@@ -41,12 +39,8 @@ public class OpenClaw4JApplication implements CommandLineRunner, ApplicationList
 
     @Override
     public void run(String... args) throws Exception {
-
-        agentConfigManager.initConfig();
-        agentConfigManager.robotManagerSubject.addObserver(teammorsMessageProxy);
-
+        agentManager.startAgent();
     }
-
 
 
 }

@@ -3,9 +3,11 @@ package com.xteammors.openclaw.skills;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.xteammors.openclaw.property.SkillsDirProperty;
 import com.xteammors.openclaw.skills.base.AgentSkill;
 import com.xteammors.openclaw.utils.ShellUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
@@ -20,8 +22,11 @@ import java.util.regex.Pattern;
 @Service
 public class UnreadMailSkill implements AgentSkill {
 
-    private static final String SKILL_CONFIG_PATH = "skills/unread-mail/SKILL.md";
-    private static final String PYTHON_SCRIPT_PATH = "skills/unread-mail/scripts/get_unread_emails.py";
+    private static final String SKILL_CONFIG_PATH = "/unread-mail/SKILL.md";
+    private static final String PYTHON_SCRIPT_PATH = "/unread-mail/scripts/get_unread_emails.py";
+
+    @Autowired
+    SkillsDirProperty skillsDirProperty;
 
     @Override
     public String getName() {
@@ -49,7 +54,8 @@ public class UnreadMailSkill implements AgentSkill {
             String password = (String) config.get("password");
 
             // 2. Execute python script to get unread emails
-            File scriptFile = new File(PYTHON_SCRIPT_PATH);
+            String scPath = skillsDirProperty.getDir()+PYTHON_SCRIPT_PATH;
+            File scriptFile = new File(scPath);
             String scriptPath = scriptFile.getAbsolutePath();
             
             log.info("Executing python script: {}", scriptPath);
@@ -123,9 +129,11 @@ public class UnreadMailSkill implements AgentSkill {
 
     private Map<String, Object> loadConfig() {
         try {
-            File file = new File(SKILL_CONFIG_PATH);
+
+            String mdPath = skillsDirProperty.getDir()+SKILL_CONFIG_PATH;
+            File file = new File(mdPath);
             if (!file.exists()) {
-                log.error("Skill config file not found: {}", SKILL_CONFIG_PATH);
+                log.error("Skill config file not found: {}", mdPath);
                 return null;
             }
 

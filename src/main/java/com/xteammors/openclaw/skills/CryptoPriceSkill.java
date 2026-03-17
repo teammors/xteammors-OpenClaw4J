@@ -3,10 +3,11 @@ package com.xteammors.openclaw.skills;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.xteammors.openclaw.property.SkillsDirProperty;
 import com.xteammors.openclaw.skills.base.AgentSkill;
 import com.xteammors.openclaw.utils.PositiveIntegerValidator;
 import com.xteammors.openclaw.utils.ShellUtils;
-import com.teammors.robot.ws.TRobotClient;
+import com.xteammors.openclaw.wssdk.XMessageClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,10 @@ import java.io.File;
 @Service
 public class CryptoPriceSkill implements AgentSkill {
 
-    private static final String PYTHON_SCRIPT_PATH = "skills/crypto-price/scripts/get_crypto_price.py";
+    private static final String PYTHON_SCRIPT_PATH = "/crypto-price/scripts/get_crypto_price.py";
+
+    @Autowired
+    SkillsDirProperty skillsDirProperty;
 
     @Autowired
     private ChatClient chatClient;
@@ -60,7 +64,8 @@ public class CryptoPriceSkill implements AgentSkill {
             sendMessage(chatId, "Checking crypto prices for " + symbols + "... This might take a moment if dependencies are updating.");
 
             // 2. Execute python script
-            File scriptFile = new File(PYTHON_SCRIPT_PATH);
+            String scPath = skillsDirProperty.getDir()+PYTHON_SCRIPT_PATH;
+            File scriptFile = new File(scPath);
             String scriptPath = scriptFile.getAbsolutePath();
             
             String output = ShellUtils.exec(
@@ -140,10 +145,10 @@ public class CryptoPriceSkill implements AgentSkill {
         
         try {
             if (PositiveIntegerValidator.isPositiveInteger(chatId)) {
-                String toUid = TRobotClient.instance().mId + "_" + chatId;
-                TRobotClient.instance().sendSingleUserTxtMessage(message, toUid, 1);
+                String toUid = XMessageClient.instance().mId + "_" + chatId;
+                XMessageClient.instance().sendSingleUserTxtMessage(message, toUid, 1);
             } else {
-                TRobotClient.instance().sendToGroupTxtMessage(message, chatId, 1);
+                XMessageClient.instance().sendToGroupTxtMessage(message, chatId, 1);
             }
         } catch (Exception e) {
             log.error("Failed to send intermediate message", e);

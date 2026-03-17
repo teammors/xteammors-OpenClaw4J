@@ -1,7 +1,9 @@
 package com.xteammors.openclaw.skills;
 
+import com.xteammors.openclaw.property.SkillsDirProperty;
 import com.xteammors.openclaw.rag.service.vector.VectorStoreService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +16,11 @@ import java.util.Map;
 @Slf4j
 @Component
 public class SkillInitializer implements CommandLineRunner {
+
+
+    @Autowired
+    SkillsDirProperty skillsDirProperty;
+
 
     private final VectorStoreService vectorStoreService;
 
@@ -29,14 +36,22 @@ public class SkillInitializer implements CommandLineRunner {
         vectorStoreService.deleteAll();
 
         // 2. Scan and initialize skills
-        File skillsDir = new File("skills");
-        if (skillsDir.exists() && skillsDir.isDirectory()) {
+        if(!skillsDirProperty.getDir().isEmpty()){
+            File skillsDir = new File(skillsDirProperty.getDir());
             scanAndRegisterSkills(skillsDir);
-        } else {
-            log.warn("Skills directory not found: {}", skillsDir.getAbsolutePath());
+            log.info("Skill Initialization Completed.");
+        }else {
+            log.warn("Skills directory not found: {}", skillsDirProperty.getDir());
         }
 
-        log.info("Skill Initialization Completed.");
+//        File skillsDir = new File("skills");
+//        if (skillsDir.exists() && skillsDir.isDirectory()) {
+//            scanAndRegisterSkills(skillsDir);
+//        } else {
+//            log.warn("Skills directory not found: {}", skillsDir.getAbsolutePath());
+//        }
+
+
     }
 
     private void scanAndRegisterSkills(File dir) {

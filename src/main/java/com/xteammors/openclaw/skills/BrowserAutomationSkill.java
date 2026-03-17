@@ -3,6 +3,7 @@ package com.xteammors.openclaw.skills;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.xteammors.openclaw.property.SkillsDirProperty;
 import com.xteammors.openclaw.skills.base.AgentSkill;
 import com.xteammors.openclaw.utils.ShellUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +17,10 @@ import java.io.File;
 @Service
 public class BrowserAutomationSkill implements AgentSkill {
 
-    private static final String PYTHON_SCRIPT_PATH = "skills/browser-automation/scripts/search_crawl.py";
+    private static final String PYTHON_SCRIPT_PATH = "/browser-automation/scripts/search_crawl.py";
+
+    @Autowired
+    SkillsDirProperty skillsDirProperty;
 
     @Autowired
     private ChatClient chatClient;
@@ -53,7 +57,8 @@ public class BrowserAutomationSkill implements AgentSkill {
             log.info("Extracted keyword: {}", keyword);
 
             // 2. Execute python script
-            File scriptFile = new File(PYTHON_SCRIPT_PATH);
+            String scPath = skillsDirProperty.getDir()+PYTHON_SCRIPT_PATH;
+            File scriptFile = new File(scPath);
             String scriptPath = scriptFile.getAbsolutePath();
             
             // Default limit

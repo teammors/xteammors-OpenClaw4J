@@ -178,12 +178,12 @@
             <artifactId>spring-boot-starter-undertow</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>io.github.teammors</groupId>
-            <artifactId>TeamMorsRobotSDK</artifactId>
-            <version>1.0.5</version>
-            <scope>compile</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>io.github.teammors</groupId>-->
+<!--            <artifactId>TeamMorsRobotSDK</artifactId>-->
+<!--            <version>1.0.5</version>-->
+<!--            <scope>compile</scope>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.telegram</groupId>
@@ -209,6 +209,26 @@
             <artifactId>redisson</artifactId>
             <version>3.39.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.83</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.21</version>
+        </dependency>
+
+        <!-- OkHttp for WebSocket -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.12.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>

@@ -1,13 +1,13 @@
-package com.xteammors.openclaw.config;
+package com.xteammors.openclaw.manager;
 
 import com.xteammors.openclaw.comm.CommParameters;
 import com.xteammors.openclaw.property.RedisProperty;
 import com.xteammors.openclaw.property.TeammorsBotProperty;
 import com.xteammors.openclaw.property.TelegramBotProperty;
+import com.xteammors.openclaw.proxy.TeammorsMessageProxy;
 import com.xteammors.openclaw.proxy.TelegramMessageProxy;
 import com.xteammors.openclaw.utils.RedisUtils;
-import com.teammors.robot.observer.TRobotManagerSubject;
-import com.teammors.robot.ws.TRobotClient;
+import com.xteammors.openclaw.wssdk.XMessageClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -15,7 +15,7 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 
 @Component
-public class AgentConfigManager {
+public class AgentManager {
 
     @Autowired
     RedisProperty redisProperty;
@@ -29,9 +29,11 @@ public class AgentConfigManager {
     @Autowired
     TelegramMessageProxy telegramMessageProxy;
 
-    public TRobotManagerSubject robotManagerSubject = new TRobotManagerSubject();
+    @Autowired
+    TeammorsMessageProxy teammorsMessageProxy;
 
-    public void initConfig(){
+
+    public void startAgent(){
 
         CommParameters.instance().setTeammorsBotToken(teammorsBotProperty.getToken());
         CommParameters.instance().setTelegramBotId(telegramBotProperty.getId());
@@ -39,12 +41,13 @@ public class AgentConfigManager {
         CommParameters.instance().setTelegramBotName(telegramBotProperty.getName());
 
         try {
+
             RedisUtils.instance().init(redisProperty.getIp(),redisProperty.getUser(),
                     redisProperty.getPassword(),redisProperty.getPort(),
                     redisProperty.getDb(), redisProperty.getCluster());
 
-
-            TRobotClient.instance().init(teammorsBotProperty.getToken(), robotManagerSubject);
+            XMessageClient.instance().addObserver(teammorsMessageProxy);
+            XMessageClient.instance().init(teammorsBotProperty.getToken());
             System.out.println("TeammorsBot 启动成功!");
 
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);

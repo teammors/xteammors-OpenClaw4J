@@ -22,7 +22,7 @@ spring:
   ai:
     openai:
       api-key: your-ai-api-key<Deepseek is used as the large model in the example>
-      base-url: your-ai-api-url
+      base-url: your-ai-api-url<Example:https://api.deepseek.com>
       embedding:
         enabled: false
       chat:
@@ -37,7 +37,7 @@ spring:
 
 
 teammors:
-  token: your-teammors-bot-token
+  token: LGjtghBY2MbgeOzaa4Jl1xTVKli2ZebO #Example Token, which can be used directly, corresponds to the OpenClaw4J agent in Teammors.
 telegram:
   id: your-telegram-bot-id
   token: your-telegram-bot-token

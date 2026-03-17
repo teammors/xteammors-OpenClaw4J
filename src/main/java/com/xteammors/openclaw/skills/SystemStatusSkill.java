@@ -2,9 +2,11 @@ package com.xteammors.openclaw.skills;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.xteammors.openclaw.property.SkillsDirProperty;
 import com.xteammors.openclaw.skills.base.AgentSkill;
 import com.xteammors.openclaw.utils.ShellUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -13,7 +15,11 @@ import java.io.File;
 @Service
 public class SystemStatusSkill implements AgentSkill {
 
-    private static final String PYTHON_SCRIPT_PATH = "skills/system-status/scripts/get_system_status.py";
+    private static final String PYTHON_SCRIPT_PATH = "/system-status/scripts/get_system_status.py";
+
+    @Autowired
+    SkillsDirProperty skillsDirProperty;
+
 
     @Override
     public String getName() {
@@ -30,7 +36,8 @@ public class SystemStatusSkill implements AgentSkill {
         log.info("Executing SystemStatusSkill with input: {}", input);
         try {
             // Execute python script
-            File scriptFile = new File(PYTHON_SCRIPT_PATH);
+            String scPath = skillsDirProperty.getDir()+PYTHON_SCRIPT_PATH;
+            File scriptFile = new File(scPath);
             String scriptPath = scriptFile.getAbsolutePath();
             
             log.info("Executing python script: {}", scriptPath);
