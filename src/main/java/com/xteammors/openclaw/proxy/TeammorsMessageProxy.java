@@ -28,6 +28,7 @@ public class TeammorsMessageProxy implements XMessageObserver {
     @Override
     public void onIMMessage(String message) {
 
+        System.out.println("[TeammorsMessageProxy] message=" + message);
         try {
 
 

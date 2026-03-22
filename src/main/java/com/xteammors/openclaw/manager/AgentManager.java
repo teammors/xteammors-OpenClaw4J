@@ -48,7 +48,6 @@ public class AgentManager {
 
             XMessageClient.instance().addObserver(teammorsMessageProxy);
             XMessageClient.instance().init(teammorsBotProperty.getToken());
-            System.out.println("TeammorsBot 启动成功!");
 
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
             botsApi.registerBot(telegramMessageProxy);

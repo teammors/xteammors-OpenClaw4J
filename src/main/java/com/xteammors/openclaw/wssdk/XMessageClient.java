@@ -2,6 +2,7 @@ package com.xteammors.openclaw.wssdk;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.xteammors.openclaw.utils.JavaEcdhAesUtil;
 import com.xteammors.openclaw.utils.PositiveIntegerValidator;
 import com.xteammors.openclaw.utils.TimeUtils;
 import okhttp3.*;
@@ -9,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -28,7 +31,8 @@ public class XMessageClient extends WebSocketListener {
     public String fromUid;
     private String token;
     private String deviceId;
-    private String encryptionKey;
+    //private String encryptionKey;
+    byte[] aAesKey;
 
     private long lastActiveTime = 0;
 
@@ -39,6 +43,7 @@ public class XMessageClient extends WebSocketListener {
     private String robotAvatar = "";
     private String privateKey = "";
     private String publicKey = "";
+    private String serverPublicKey = "";
     private String apiServer = "";
     private String apiToken = "";
     private String apiStartId = "";
@@ -125,8 +130,9 @@ public class XMessageClient extends WebSocketListener {
                 jsonStr = text;
             } else {
                 try {
-                    jsonStr = SecurityUtil.decrypt(encryptionKey, text);
+                    jsonStr = JavaEcdhAesUtil.aesGcmDecrypt(aAesKey, text);
                 } catch (Exception e) {
+                    e.printStackTrace();
                     messageSubject.publishError("Decryption failed: " + e.getMessage());
                     return;
                 }
@@ -216,16 +222,18 @@ public class XMessageClient extends WebSocketListener {
         if (webSocket != null && isConnected.get()) {
             messageBody.setcTimest(String.valueOf(System.currentTimeMillis()));
             String jsonStr = JSON.toJSONString(messageBody); // Use FastJson
-
-            String payload;
+            String payload = "";
             // Login message (1000000) is NOT encrypted
             if ("1000000".equals(messageBody.getEventId())) {
                 payload = jsonStr;
             } else {
                 // Other messages ARE encrypted
-                payload = SecurityUtil.encrypt(encryptionKey, jsonStr);
+                try {
+                    payload = JavaEcdhAesUtil.aesGcmEncrypt(aAesKey, jsonStr);
+                }catch (Exception e) {  e.printStackTrace(); }
             }
             webSocket.send(payload);
+
         } else {
             messageSubject.publishError("Cannot send message, not connected");
         }
@@ -394,6 +402,7 @@ public class XMessageClient extends WebSocketListener {
                     messageSubject.publish("Login Successful!");
                     isLoggedIn.set(true);
                     startPing();
+                    System.out.println("TeammorsBot 启动成功!");
                 } else {
                     messageSubject.publish("Login Failed: "+ messageBody.getDataBody());
                     isLoggedIn.set(false);
@@ -624,8 +633,7 @@ public class XMessageClient extends WebSocketListener {
                             fromUid = responseDataObject.get("account").toString();
                             token =  responseDataObject.get("token").toString();
                             serverIp = responseDataObject.get("server").toString();
-                            publicKey = responseDataObject.get("publicKey").toString();
-                            privateKey = responseDataObject.get("privateKey").toString();
+
                             robotId = responseDataObject.get("id").toString();
                             robotName = responseDataObject.get("name").toString();
                             robotAvatar = responseDataObject.get("avatar").toString();
@@ -633,13 +641,25 @@ public class XMessageClient extends WebSocketListener {
                             mId = fromUid.split("_")[0];
                             groupId = "robot_"+robotId+"_user_list";
                             deviceId = "bot_"+token;
-                            encryptionKey = SecurityUtil.getUidKey(fromUid);
+
+                            //encryptionKey = SecurityUtil.getUidKey(fromUid);
+
+                            publicKey = responseDataObject.get("publicKey").toString();
+                            privateKey = responseDataObject.get("privateKey").toString();
+                            serverPublicKey = responseDataObject.get("serverPublicKey").toString();
+
+                            PublicKey bPublicKey = JavaEcdhAesUtil.stringToPublicKey(serverPublicKey);
+                            PrivateKey aPrivateKey = JavaEcdhAesUtil.stringToPrivateKey(privateKey);
+                            byte[] aSharedSecret = JavaEcdhAesUtil.computeSharedSecret(aPrivateKey, bPublicKey);
+                            aAesKey = JavaEcdhAesUtil.hkdfDeriveKey(aSharedSecret, null);
 
                             connect();
 
                         } else {
                             System.err.println("Robot info request failed with code: " + response.code());
                         }
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
                     } finally {
                         if (response.body() != null) {
                             response.body().close();
