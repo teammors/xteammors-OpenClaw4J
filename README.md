@@ -28,7 +28,7 @@
 ### ✨ 主要特点 (Features)
 
 *   **多平台支持**：内置 Telegram Bot 和 Teammors 机器人适配器，一套核心逻辑，多端服务。
-*   **AI 核心驱动**：基于 **Spring AI** 框架，默认集成 **DeepSeek** 大模型，支持流式对话与上下文理解。
+*   **AI 核心驱动**：基于 **Spring AI** 框架，默认集成 **DeepSeek** 和 **火山引擎豆包** 大模型，支持流式对话与上下文理解。
 *   **RAG 知识库**：
     *   内置 `SimpleVectorStore`（基于文件的向量存储），无需复杂的向量数据库部署即可实现轻量级 RAG。
     *   支持本地知识检索，增强回答准确性。
@@ -148,19 +148,35 @@ java -jar target/xmessage-openclaw4j-1.0.0.jar
 ```
 OpenClaw4J/
 ├── skills/              # 技能目录
+│   ├── blogwatcher/           # 博客监控
 │   ├── browser-automation/    # 浏览器自动化
 │   ├── chat-summary/          # 聊天摘要
 │   ├── crypto-price/          # 加密货币价格查询
+│   ├── gemini/                # Gemini 集成
+│   ├── github/                # GitHub 操作
+│   ├── goplaces/              # 位置信息
+│   ├── himalaya/              # 喜马拉雅
 │   ├── keno-winning-numbers/  # 彩票开奖号码
+│   ├── nano-pdf/              # 轻量级 PDF 处理
+│   ├── notion/                # Notion 集成
+│   ├── openai-whisper/        # OpenAI Whisper
+│   ├── openai-whisper-api/    # OpenAI Whisper API
+│   ├── oracle/                # Oracle 数据库
 │   ├── pdf-generator/         # PDF 生成
 │   ├── ppt-generator/         # PPT 生成
+│   ├── sag/                   # 智能对话生成
 │   ├── scheduled-task/        # 定时任务
 │   ├── send-email/            # 邮件发送
+│   ├── sherpa-onnx-tts/       # Sherpa ONNX TTS
 │   ├── skill-generator/       # 技能生成器
+│   ├── summarize/             # 摘要生成
 │   ├── system-status/         # 系统状态监控
 │   ├── toutiao-news/          # 头条新闻
+│   ├── trello/                # Trello 集成
 │   ├── unread-mail/           # 未读邮件查询
-│   └── weather-forecast/      # 天气预报
+│   ├── video-frames/          # 视频帧处理
+│   ├── weather-forecast/      # 天气预报
+│   └── xurl/                  # URL 处理
 ├── src/
 │   ├── main/java/com/xteammors/openclaw/
 │   │   ├── adapter/           # 消息适配器
@@ -191,7 +207,7 @@ OpenClaw4J/
 
 **OpenClaw4J** is a modern intelligent Agent framework built on Java 21 and **Spring AI**. Inspired by the OpenClaw project (with its spirit of open source and classic reimplementation), this project aims to provide a flexible, extensible, and powerful foundation for Java developers to build AI Bots and Agents.
 
-It integrates advanced LLMs (like DeepSeek) and empowers agents with real-world capabilities through **RAG (Retrieval-Augmented Generation)** and a **Hybrid Skill System (Java + Python)**, supporting multi-platform (Telegram, Teammors) connectivity.
+It integrates advanced LLMs (like DeepSeek and Volcano Engine Doubao) and empowers agents with real-world capabilities through **RAG (Retrieval-Augmented Generation)** and a **Hybrid Skill System (Java + Python)**, supporting multi-platform (Telegram, Teammors) connectivity.
 
 ### ✨ Key Features
 
@@ -206,18 +222,34 @@ It integrates advanced LLMs (like DeepSeek) and empowers agents with real-world 
     *   Supports Java invoking Python scripts as "Skills", easily extending various capabilities.
 *   **Rich Skill Ecosystem**:
     *   **Browser Automation**: Automatically search and crawl web content
+    *   **Blog Watcher**: Monitor blog updates
     *   **Chat Summary**: Generate chat history summaries
     *   **Crypto Price**: Real-time cryptocurrency price query
+    *   **Gemini**: Integrate Google Gemini model
+    *   **GitHub**: GitHub repository operations and information query
+    *   **Go Places**: Location information query and navigation
+    *   **Himalaya**: Himalaya audio content access
     *   **Keno Winning Numbers**: Get lottery results
+    *   **Nano PDF**: Lightweight PDF processing
+    *   **Notion**: Notion document operations
+    *   **OpenAI Whisper**: Speech-to-text conversion
+    *   **OpenAI Whisper API**: Speech-to-text using OpenAI Whisper API
+    *   **Oracle**: Oracle database operations
     *   **PDF Generator**: Generate PDF files from content
     *   **PPT Generator**: Automatically create presentations
+    *   **SAG**: Intelligent dialogue generation
     *   **Scheduled Task**: Set and manage scheduled tasks
     *   **Send Email**: Send email messages
+    *   **Sherpa ONNX TTS**: Text-to-speech conversion
     *   **Skill Generator**: Automatically generate new skills
+    *   **Summarize**: Generate text summaries
     *   **System Status**: Monitor system running status
     *   **Toutiao News**: Get headline news
+    *   **Trello**: Trello project management
     *   **Unread Mail**: Check unread emails
+    *   **Video Frames**: Video frame extraction and processing
     *   **Weather Forecast**: Get weather forecasts
+    *   **XURL**: URL processing and short link generation
 *   **Enterprise Architecture**: Built on Spring Boot 3.3, integrated with Redis cache and MySQL database, ensuring scalability and maintainability.
 *   **Modular Design**: Clear package structure including adapter, comm, context, manager, property, proxy, rag, skills, utils, wssdk modules.
 
@@ -300,19 +332,35 @@ Or run `OpenClaw4JApplication.java` directly from your IDE (IntelliJ IDEA).
 ```
 OpenClaw4J/
 ├── skills/              # Skills directory
+│   ├── blogwatcher/           # Blog watcher
 │   ├── browser-automation/    # Browser automation
 │   ├── chat-summary/          # Chat summary
 │   ├── crypto-price/          # Cryptocurrency price
+│   ├── gemini/                # Gemini integration
+│   ├── github/                # GitHub operations
+│   ├── goplaces/              # Location information
+│   ├── himalaya/              # Himalaya
 │   ├── keno-winning-numbers/  # Keno winning numbers
+│   ├── nano-pdf/              # Lightweight PDF processing
+│   ├── notion/                # Notion integration
+│   ├── openai-whisper/        # OpenAI Whisper
+│   ├── openai-whisper-api/    # OpenAI Whisper API
+│   ├── oracle/                # Oracle database
 │   ├── pdf-generator/         # PDF generator
 │   ├── ppt-generator/         # PPT generator
+│   ├── sag/                   # Intelligent dialogue generation
 │   ├── scheduled-task/        # Scheduled task
 │   ├── send-email/            # Send email
+│   ├── sherpa-onnx-tts/       # Sherpa ONNX TTS
 │   ├── skill-generator/       # Skill generator
+│   ├── summarize/             # Summarize
 │   ├── system-status/         # System status
 │   ├── toutiao-news/          # Toutiao news
+│   ├── trello/                # Trello integration
 │   ├── unread-mail/           # Unread mail
-│   └── weather-forecast/      # Weather forecast
+│   ├── video-frames/          # Video frames
+│   ├── weather-forecast/      # Weather forecast
+│   └── xurl/                  # URL processing
 ├── src/
 │   ├── main/java/com/xteammors/openclaw/
 │   │   ├── adapter/           # Message adapters
