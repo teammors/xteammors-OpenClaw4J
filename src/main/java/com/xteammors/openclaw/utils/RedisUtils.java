@@ -1,14 +1,16 @@
 package com.xteammors.openclaw.utils;
 
 import com.xteammors.openclaw.comm.CommParameters;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 
 
-@Slf4j
 public class RedisUtils {
+
+    private static final Logger log = LoggerFactory.getLogger(RedisUtils.class);
 
     public RedissonClient redisson;
 

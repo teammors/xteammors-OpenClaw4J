@@ -2,8 +2,58 @@ import imaplib
 import email
 from email.header import decode_header
 import sys
-import argparse
-import json
+import os
+import re
+import subprocess
+
+# Try to import yaml, install if missing
+try:
+    import yaml
+except ImportError:
+    try:
+        # Install pyyaml automatically
+        subprocess.check_call(
+            [sys.executable, "-m", "pip", "install", "pyyaml", "--break-system-packages"],
+            stdout=sys.stderr,  # 重定向输出到标准错误
+            stderr=sys.stderr
+        )
+        import yaml
+    except Exception as e:
+        print(f"Error: Failed to install pyyaml: {str(e)}", file=sys.stderr)
+        sys.exit(1)
+
+def load_config():
+    """从 SKILL.md 文件中加载配置"""
+    # 获取脚本所在目录的父目录，即技能目录
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    skill_dir = os.path.dirname(script_dir)
+    skill_md_path = os.path.join(skill_dir, "SKILL.md")
+    
+    if not os.path.exists(skill_md_path):
+        print(f"Error: SKILL.md not found at {skill_md_path}", file=sys.stderr)
+        return None
+    
+    try:
+        with open(skill_md_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # 提取 YAML 块
+        yaml_match = re.search(r'```yaml\s*(.*?)\s*```', content, re.DOTALL)
+        if not yaml_match:
+            print("Error: YAML configuration not found in SKILL.md", file=sys.stderr)
+            return None
+        
+        yaml_content = yaml_match.group(1)
+        config = yaml.safe_load(yaml_content)
+        
+        if 'mail' not in config:
+            print("Error: 'mail' section not found in configuration", file=sys.stderr)
+            return None
+        
+        return config['mail']
+    except Exception as e:
+        print(f"Error loading config: {e}", file=sys.stderr)
+        return None
 
 def get_unread_emails(host, port, username, password, limit=5):
     try:
@@ -67,19 +117,55 @@ def get_unread_emails(host, port, username, password, limit=5):
         print(f"Error: {e}", file=sys.stderr)
         return None
 
+def format_output(emails):
+    """Format the results into the required text format"""
+    if emails is None:
+        return "Error: Failed to retrieve emails"
+    
+    if not emails:
+        return "Here are your unread emails:\nUnRead Number: 0\nMail List: (Empty)"
+    
+    sb = []
+    sb.append("Here are your unread emails:")
+    sb.append(f"UnRead Number: {len(emails)}")
+    sb.append("Mail List:")
+    
+    count = len(emails)
+    for i, email in enumerate(emails):
+        count -= 1
+        if count == 0:
+            sb.append(f"{i + 1}、From：{email['from']}  Subject：{email['subject']}")
+        else:
+            sb.append(f"{i + 1}、From：{email['from']}  Subject：{email['subject']}")
+    
+    return "\n".join(sb)
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Fetch unread emails via IMAP')
-    parser.add_argument('--host', required=True, help='IMAP server host')
-    parser.add_argument('--port', type=int, required=True, help='IMAP server port')
-    parser.add_argument('--username', required=True, help='IMAP username')
-    parser.add_argument('--password', required=True, help='IMAP password')
-    parser.add_argument('--limit', type=int, default=5, help='Limit number of emails to fetch')
-
-    args = parser.parse_args()
-
-    emails = get_unread_emails(args.host, args.port, args.username, args.password, args.limit)
+    # 从 SKILL.md 加载配置
+    config = load_config()
+    if not config:
+        print("Error: Failed to load configuration", file=sys.stderr)
+        sys.exit(1)
+    
+    # 从配置中获取参数
+    host = config.get('imap_host')
+    port = config.get('imap_port')
+    username = config.get('username')
+    password = config.get('password')
+    limit = 5  # 默认限制为 5 封邮件
+    
+    # 检查必要参数
+    if not all([host, port, username, password]):
+        print("Error: Missing required configuration parameters", file=sys.stderr)
+        sys.exit(1)
+    
+    # 执行邮件获取
+    emails = get_unread_emails(host, port, username, password, limit)
     
     if emails is not None:
-        print(json.dumps(emails, ensure_ascii=False, indent=2))
+        formatted_output = format_output(emails)
+        # 只输出业务数据到标准输出
+        print(formatted_output)
     else:
+        print("Error: Failed to retrieve emails", file=sys.stderr)
         sys.exit(1)

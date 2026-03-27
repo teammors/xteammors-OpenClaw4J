@@ -6,6 +6,7 @@ import com.xteammors.openclaw.property.TeammorsBotProperty;
 import com.xteammors.openclaw.property.TelegramBotProperty;
 import com.xteammors.openclaw.proxy.TeammorsMessageProxy;
 import com.xteammors.openclaw.proxy.TelegramMessageProxy;
+import com.xteammors.openclaw.skills.GenericSkill;
 import com.xteammors.openclaw.utils.RedisUtils;
 import com.xteammors.openclaw.wssdk.XMessageClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class AgentManager {
     @Autowired
     TeammorsMessageProxy teammorsMessageProxy;
 
+    @Autowired
+    GenericSkill genericSkill;
+
 
     public void startAgent(){
 
@@ -49,15 +53,22 @@ public class AgentManager {
             XMessageClient.instance().addObserver(teammorsMessageProxy);
             XMessageClient.instance().init(teammorsBotProperty.getToken());
 
-            TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-            botsApi.registerBot(telegramMessageProxy);
-            System.out.println("TelegramBot 启动成功!");
+//            TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
+//            botsApi.registerBot(telegramMessageProxy);
+//            System.out.println("TelegramBot 启动成功!");
 
         }catch (Exception e){
             e.printStackTrace();
         }
 
 
+    }
+
+    /**
+     * 执行技能
+     */
+    public String executeSkill(String input, String chatId) {
+        return genericSkill.execute(input, chatId);
     }
 
 }

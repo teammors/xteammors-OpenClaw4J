@@ -3,26 +3,26 @@ package com.xteammors.openclaw.proxy;
 import com.xteammors.openclaw.adapter.TelegramMessageAdapter;
 import com.xteammors.openclaw.comm.CommParameters;
 import com.xteammors.openclaw.rag.service.RAGService;
-import com.xteammors.openclaw.skills.base.AgentSkill;
+import com.xteammors.openclaw.skills.GenericSkill;
 import com.xteammors.openclaw.utils.ThreadUtils;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.util.List;
 
-
-@Slf4j
 @Service
 public class TelegramMessageProxy extends TelegramLongPollingBot {
+
+    private static final Logger log = LoggerFactory.getLogger(TelegramMessageProxy.class);
 
     @Autowired
     RAGService ragService;
 
     @Autowired
-    List<AgentSkill> skills;
+    GenericSkill genericSkill;
 
     @Override
     public String getBotUsername() {
@@ -45,14 +45,14 @@ public class TelegramMessageProxy extends TelegramLongPollingBot {
             Long chatId = update.getMessage().getChatId(); // 聊天ID（唯一标识用户/群聊，用于回复）
             String userInput = update.getMessage().getText(); // 用户发送的文本内容
             String userName = update.getMessage().getFrom().getFirstName(); // 发送者的名字
-            TelegramMessageAdapter telegramMessageAdapter = new TelegramMessageAdapter(chatId.toString(), userInput, ragService, skills,this);
+            TelegramMessageAdapter telegramMessageAdapter = new TelegramMessageAdapter(chatId.toString(), userInput, ragService, genericSkill, this);
             ThreadUtils.instance().getExecutor().execute(telegramMessageAdapter);
         }
 
     }
 
     @Override
-    public void onUpdatesReceived(List<Update> updates) {
+    public void onUpdatesReceived(java.util.List<Update> updates) {
         super.onUpdatesReceived(updates);
     }
 

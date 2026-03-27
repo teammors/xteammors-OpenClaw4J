@@ -124,10 +124,56 @@ def get_keno_results():
         return scraped_data
 
     
+def format_output(data):
+    """Format the results into the required text format"""
+    if isinstance(data, dict) and "error" in data:
+        return f"Failed to retrieve Keno numbers: {data['error']}"
+    
+    if not data:
+        return "No Keno draws found."
+    
+    sb = []
+    sb.append("🎱 **Latest 10 Keno Draws**")
+    sb.append("")
+    
+    for draw in data:
+        # Updated keys based on user-provided JSON sample
+        date = draw.get("drawDate")
+        time = draw.get("drawTime")
+        number = draw.get("drawNbr")
+        winning = draw.get("drawNbrs")
+        bonus = draw.get("drawBonus")
+        
+        # Fallbacks
+        if date is None:
+            date = draw.get("date")
+        if number is None:
+            number = draw.get("drawNumber")
+        if winning is None:
+            winning = draw.get("numbers")
+        if winning is None:
+            winning = draw.get("results")
+        if winning is None:
+            winning = draw.get("winningNumbers")
+        
+        date_time = f"{date} {time}" if time else date
+        
+        sb.append(f"**Draw #{number if number else 'N/A'}** ({date_time if date_time else 'N/A'})")
+        if winning:
+            sb.append(f"Numbers: {winning}")
+        if bonus is not None:
+            sb.append(f"Bonus: {bonus}")
+        elif "bonusNumber" in draw:
+            sb.append(f"Bonus: {draw['bonusNumber']}")
+        sb.append("")
+    
+    return "\n".join(sb)
+
 if __name__ == "__main__":
     try:
         data = get_keno_results()
-        print(json.dumps(data, indent=2))
+        formatted_output = format_output(data)
+        print(formatted_output)
     except Exception as e:
-        print(json.dumps({"error": f"Script execution failed: {str(e)}"}, indent=2))
+        print(f"Error: Script execution failed: {str(e)}")
         sys.exit(1)

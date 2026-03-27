@@ -1,12 +1,25 @@
 package com.xteammors.openclaw.property;
 
-import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConfigurationProperties(prefix = "skills")
-@Data
 public class SkillsDirProperty {
-    String dir;
+    private String dir;
+
+    public String getDir() {
+        return dir;
+    }
+
+    public void setDir(String dir) {
+        this.dir = dir;
+    }
+
+    @Override
+    public String toString() {
+        return "SkillsDirProperty{" +
+                "dir='" + dir + '\'' +
+                '}';
+    }
 }

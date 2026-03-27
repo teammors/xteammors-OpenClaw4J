@@ -321,7 +321,10 @@ public class XMessageClient extends WebSocketListener {
         return sendGroupMessage(groupId,message.toJson(),isCache+"");
     }
 
-    public boolean sendPrivateMessage(String toUid, String content, String isCache) {
+    private boolean sendPrivateMessage(String toUid, String content, String isCache) {
+        if (!toUid.contains("_")) {
+            toUid = mId + "_" + toUid;
+        }
         MessageBody msg = new MessageBody();
         msg.setEventId("1000001");
         msg.setFromUid(fromUid);
@@ -336,6 +339,9 @@ public class XMessageClient extends WebSocketListener {
     }
 
     private void sendAck(String toUid, String messageId) {
+        if (!toUid.contains("_")) {
+            toUid = mId + "_" + toUid;
+        }
         MessageBody msg = new MessageBody();
         msg.setEventId("1000002");
         msg.setFromUid(fromUid);
@@ -378,7 +384,7 @@ public class XMessageClient extends WebSocketListener {
     }
 
 
-    public boolean sendGroupMessage(String groupId, String content, String isCache) {
+    private boolean sendGroupMessage(String groupId, String content, String isCache) {
         MessageBody msg = new MessageBody();
         msg.setEventId("5000004");
         msg.setFromUid(fromUid);

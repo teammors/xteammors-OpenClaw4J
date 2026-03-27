@@ -2,7 +2,8 @@ package com.xteammors.openclaw.skills;
 
 import com.xteammors.openclaw.property.SkillsDirProperty;
 import com.xteammors.openclaw.rag.service.vector.VectorStoreService;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -13,9 +14,9 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
 @Component
 public class SkillInitializer implements CommandLineRunner {
+    private static final Logger log = LoggerFactory.getLogger(SkillInitializer.class);
 
 
     @Autowired
@@ -38,19 +39,21 @@ public class SkillInitializer implements CommandLineRunner {
         // 2. Scan and initialize skills
         if(!skillsDirProperty.getDir().isEmpty()){
             File skillsDir = new File(skillsDirProperty.getDir());
+            log.info("Scanning skills directory: {}", skillsDir.getAbsolutePath());
             scanAndRegisterSkills(skillsDir);
             log.info("Skill Initialization Completed.");
         }else {
             log.warn("Skills directory not found: {}", skillsDirProperty.getDir());
+            // Fallback to local skills directory
+            File skillsDir = new File("skills");
+            if (skillsDir.exists() && skillsDir.isDirectory()) {
+                log.info("Fallback to local skills directory: {}", skillsDir.getAbsolutePath());
+                scanAndRegisterSkills(skillsDir);
+                log.info("Skill Initialization Completed.");
+            } else {
+                log.warn("Local skills directory not found: {}", skillsDir.getAbsolutePath());
+            }
         }
-
-//        File skillsDir = new File("skills");
-//        if (skillsDir.exists() && skillsDir.isDirectory()) {
-//            scanAndRegisterSkills(skillsDir);
-//        } else {
-//            log.warn("Skills directory not found: {}", skillsDir.getAbsolutePath());
-//        }
-
 
     }
 
@@ -83,6 +86,46 @@ public class SkillInitializer implements CommandLineRunner {
 
         } catch (IOException e) {
             log.error("Failed to read skill file: {}", skillFile.getAbsolutePath(), e);
+        }
+    }
+
+    /**
+     * Add a single skill to the vector store
+     * @param skillDirPath Path to the skill directory
+     */
+    public void addSkill(String skillDirPath) {
+        File skillDir = new File(skillDirPath);
+        if (skillDir.exists() && skillDir.isDirectory()) {
+            File skillFile = new File(skillDir, "SKILL.md");
+            if (skillFile.exists() && skillFile.isFile()) {
+                registerSkill(skillFile);
+            } else {
+                log.warn("SKILL.md file not found in: {}", skillDirPath);
+            }
+        } else {
+            log.warn("Skill directory not found: {}", skillDirPath);
+        }
+    }
+
+    /**
+     * Reinitialize all skills
+     */
+    public void reinitializeSkills() {
+        try {
+            log.info("Reinitializing skills...");
+            // Clean up existing data
+            vectorStoreService.deleteAll();
+
+            // Scan and initialize skills
+            if(!skillsDirProperty.getDir().isEmpty()){
+                File skillsDir = new File(skillsDirProperty.getDir());
+                scanAndRegisterSkills(skillsDir);
+                log.info("Skill reinitialization completed.");
+            } else {
+                log.warn("Skills directory not found: {}", skillsDirProperty.getDir());
+            }
+        } catch (Exception e) {
+            log.error("Failed to reinitialize skills", e);
         }
     }
 }

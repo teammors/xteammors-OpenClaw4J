@@ -74,7 +74,22 @@ public class VectorStoreService {
 
     public List<Document> similaritySearch(String query, int topK) {
         try {
-            return vectorStore.similaritySearch(query);
+            // 检查vectorStore是否支持指定topK参数
+            if (vectorStore instanceof SimpleVectorStore) {
+                // SimpleVectorStore的similaritySearch方法默认只返回4个结果
+                // 我们需要使用带topK参数的版本
+                try {
+                    // 使用反射调用带topK参数的方法
+                    java.lang.reflect.Method method = SimpleVectorStore.class.getMethod("similaritySearch", String.class, int.class);
+                    return (List<Document>) method.invoke(vectorStore, query, topK);
+                } catch (Exception e) {
+                    log.warn("调用带topK参数的similaritySearch方法失败: {}", e.getMessage());
+                    // 回退到默认方法
+                    return vectorStore.similaritySearch(query);
+                }
+            } else {
+                return vectorStore.similaritySearch(query);
+            }
         } catch (Exception e) {
             log.warn("向量检索失败: {}", e.getMessage());
             return Collections.emptyList();
@@ -247,6 +262,8 @@ public class VectorStoreService {
         if (content == null || content.isEmpty() || tokens.isEmpty()) return 0;
         String lower = content.toLowerCase();
         int score = 0;
+        
+        // 原始 token 匹配
         for (String t : tokens) {
             int idx = 0;
             while ((idx = lower.indexOf(t, idx)) != -1) {
@@ -254,11 +271,39 @@ public class VectorStoreService {
                 idx += Math.max(1, t.length());
             }
         }
+        
+        // 针对特定查询模式的增强
         if (query.contains("最大") || query.contains("多少")) {
             if (lower.matches(".*\\d+.*")) score += 5;
             if (lower.contains("20000")) score += 3;
             if (lower.contains("20000+")) score += 4;
         }
+        
+        // 针对邮件相关的关键词增强
+        if (query.contains("未读") || query.contains("邮件") || query.contains("mail") || query.contains("email")) {
+            if (lower.contains("unread")) score += 10;
+            if (lower.contains("mail")) score += 8;
+            if (lower.contains("email")) score += 8;
+            if (lower.contains("imap")) score += 5;
+            if (lower.contains("inbox")) score += 5;
+        }
+        
+        // 针对 BTC、加密货币相关
+        if (query.contains("BTC") || query.contains("比特币") || query.contains("crypto")) {
+            if (lower.contains("btc")) score += 10;
+            if (lower.contains("bitcoin")) score += 10;
+            if (lower.contains("crypto")) score += 8;
+            if (lower.contains("price")) score += 5;
+        }
+        
+        // 针对系统状态相关
+        if (query.contains("系统") || query.contains("状态") || query.contains("status")) {
+            if (lower.contains("system")) score += 8;
+            if (lower.contains("status")) score += 8;
+            if (lower.contains("cpu")) score += 5;
+            if (lower.contains("memory")) score += 5;
+        }
+        
         return score;
     }
 
@@ -280,6 +325,8 @@ public class VectorStoreService {
     private List<String> synonymsForQuery(String query) {
         List<String> s = new ArrayList<>();
         if (query == null) return s;
+        
+        // 群组相关
         if (query.contains("群组") || query.contains("群")) {
             s.add("群组");
             s.add("群");
@@ -295,6 +342,46 @@ public class VectorStoreService {
             s.add("最大");
             s.add("多少");
         }
+        
+        // 系统状态相关 - 增强同义词
+        if (query.contains("系统") || query.contains("状态") || query.contains("status")) {
+            s.add("系统");
+            s.add("状态");
+            s.add("system");
+            s.add("status");
+            s.add("cpu");
+            s.add("memory");
+            s.add("disk");
+            s.add("usage");
+            s.add("server");
+            s.add("performance");
+            s.add("monitoring");
+        }
+        
+        // 邮件相关 - 增强同义词
+        if (query.contains("未读") || query.contains("邮件") || query.contains("mail") || query.contains("email")) {
+            s.add("未读");
+            s.add("邮件");
+            s.add("unread");
+            s.add("mail");
+            s.add("email");
+            s.add("inbox");
+            s.add("imap");
+        }
+        
+        // BTC、加密货币相关 - 增强同义词
+        if (query.contains("BTC") || query.contains("比特币") || query.contains("crypto") || query.contains("价格")) {
+            s.add("btc");
+            s.add("bitcoin");
+            s.add("crypto");
+            s.add("price");
+            s.add("eth");
+            s.add("ethereum");
+            s.add("sol");
+            s.add("solana");
+            s.add("coin");
+        }
+        
         return s;
     }
 }

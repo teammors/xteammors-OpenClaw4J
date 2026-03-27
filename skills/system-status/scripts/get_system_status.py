@@ -82,11 +82,42 @@ def get_system_status():
     except Exception as e:
         return {"error": str(e)}
 
+def format_output(status):
+    """Format the results into the required text format"""
+    if isinstance(status, dict) and "error" in status:
+        return f"Error retrieving status: {status['error']}"
+    
+    sb = []
+    sb.append("System Status Report:")
+    sb.append("--------------------------------")
+    
+    # CPU
+    sb.append(f"CPU Usage: {status['cpu_usage']}")
+    
+    # Memory
+    mem = status['memory']
+    sb.append("Memory: ")
+    sb.append(f"▶Total: {mem['total']}  Used: {mem['used']}  Free: {mem['available']}  ({mem['percent']})")
+    
+    # Disk
+    disk = status['disk']
+    sb.append("Disk Usage: ")
+    sb.append(f"▶Total: {disk['total']}  Used: {disk['used']}  Free: {disk['free']}  ({disk['percent']})")
+    
+    # Processes
+    sb.append("Processes: ")
+    sb.append(f"▶Total Running: {status['total_processes']}")
+    sb.append(f"▶User Processes: {status['user_processes']}")
+    sb.append("--------------------------------")
+    
+    return "\n".join(sb)
+
 if __name__ == "__main__":
     # Ensure psutil is installed: pip install psutil
     try:
         status = get_system_status()
-        print(json.dumps(status, indent=2))
+        formatted_output = format_output(status)
+        print(formatted_output)
     except Exception as e:
-        print(json.dumps({"error": f"An unexpected error occurred: {str(e)}"}, indent=2))
+        print(f"Error: An unexpected error occurred: {str(e)}")
         sys.exit(1)
