@@ -38,18 +38,34 @@
     *   支持 Java 调用 Python 脚本作为 "Skill"（技能），轻松扩展各种能力。
 *   **丰富的技能生态**：
     *   **浏览器自动化** (Browser Automation)：自动搜索和爬取网页内容
+    *   **博客监控** (Blog Watcher)：监控博客更新
     *   **聊天摘要** (Chat Summary)：生成聊天记录摘要
     *   **加密货币价格查询** (Crypto Price)：实时查询加密货币价格
+    *   **Gemini**：集成 Google Gemini 模型
+    *   **GitHub**：GitHub 仓库操作和信息查询
+    *   **Go Places**：位置信息查询和导航
+    *   **Himalaya**：喜马拉雅音频内容访问
     *   **彩票开奖号码** (Keno Winning Numbers)：获取彩票开奖结果
+    *   **Nano PDF**：轻量级 PDF 处理
+    *   **Notion**：Notion 文档操作
+    *   **OpenAI Whisper**：语音转文本
+    *   **OpenAI Whisper API**：使用 OpenAI Whisper API 进行语音转文本
+    *   **Oracle**：Oracle 数据库操作
     *   **PDF 生成** (PDF Generator)：根据内容生成 PDF 文件
     *   **PPT 生成** (PPT Generator)：自动生成演示文稿
+    *   **SAG**：智能对话生成
     *   **定时任务** (Scheduled Task)：设置和管理定时任务
     *   **邮件发送** (Send Email)：发送电子邮件
+    *   **Sherpa ONNX TTS**：文本转语音
     *   **技能生成器** (Skill Generator)：自动生成新技能
+    *   **摘要生成** (Summarize)：生成文本摘要
     *   **系统状态监控** (System Status)：监控系统运行状态
     *   **头条新闻** (Toutiao News)：获取头条新闻
+    *   **Trello**：Trello 项目管理
     *   **未读邮件查询** (Unread Mail)：查询未读邮件
+    *   **视频帧处理** (Video Frames)：视频帧提取和处理
     *   **天气预报** (Weather Forecast)：获取天气预报
+    *   **XURL**：URL 处理和短链接生成
 *   **企业级架构**：基于 Spring Boot 3.3，集成 Redis 缓存和 MySQL 数据库，具备良好的扩展性和维护性。
 *   **模块化设计**：清晰的包结构，包括 adapter、comm、context、manager、property、proxy、rag、skills、utils、wssdk 等模块。
 
